@@ -2,6 +2,9 @@
 # coding: utf-8
 
 # In[ ]:
-
-print("hello world")
-
+import sys; 
+try:
+    print("hello world")
+    sys.exit()
+except:
+    print("exiting lab 2")
