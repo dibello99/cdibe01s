@@ -3,6 +3,7 @@
 
 # In[ ]:
 
+
 #Lsa Lab CSC570R-Chris DiBello
 from bs4 import BeautifulSoup
 import nltk
@@ -31,9 +32,10 @@ stopset.update(['and','game', 'nntp', 'go', 'and', 'the', 'com','After', 'Althou
 
 #set vectorizor shape
 X = vectorizer.fit_transform(corpus)
-#print X[0]
+X[0]
+print X[0]
 X.shape
-lsa = TruncatedSVD(n_components=500, n_iter=100)
+lsa = TruncatedSVD(n_components=20, n_iter=100)
 lsa.fit(X)
 #This is the first row for V
 lsa.components_[0]
@@ -48,4 +50,4 @@ for i, comp in enumerate(lsa.components_):
     for term in sortedTerms:
         print term[0]
     print " "
-
+lsa.components_
