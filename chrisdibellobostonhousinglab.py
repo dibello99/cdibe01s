@@ -31,7 +31,7 @@ print 'Performance Measurement'
 print 'Print R2 Score'
 print r2_score(y_test, clf.predict(X_test))
 #find MSE score
-print 'Print RMS Score'
+print 'Print MSE Score'
 print mean_squared_error(y_test, clf.predict(X_test))
 
 zip (y_test, clf.predict(X_test))
