@@ -1,6 +1,10 @@
 
 # coding: utf-8
 
+# In[2]:
+
+
+
 # In[ ]:
 
 
@@ -24,9 +28,11 @@ X = pd.DataFrame()
 X['sex'] = df['Sex']
 #average = df.Sex.mean()
 #df.Sex=df.Sex.fillna(value=average)
+#add embarked and fare to calculate AUC
 X['embarked'] = df['Embarked']
 X['fare'] = df['Fare']
 X['survived'] = df['Survived']
+#account for missing age values
 average = df.Age.mean()
 df.Age=df.Age.fillna(value=average)
 X['age'] = df['Age']
@@ -41,8 +47,10 @@ X = X.drop(['survived'], axis=1)
 #refer back to last week's lecture if you forget why we're doing this
 
 #We can use pandas get_dummies to implement one hot encoding.
+#set dummies for embarked and sex
 pd.get_dummies(X.sex)
 pd.get_dummies(X.embarked)
+
 #IMPORTANT! get_dummies returns an indicator variable for each category.
 #Refering back to my talk on encoding variables, it's important to drop one category
 #Otherwise you'll have two perfectly colinear variables.   
@@ -50,6 +58,7 @@ pd.get_dummies(X.embarked)
 #Here, since I only have two variables it's easy, I'll just take one, and reassign it to sex
 #so now Sex becomes female = 1, male = 0
 X['sex'] = pd.get_dummies(X.sex)['male']
+#readsign embarked variable
 X['embarked'] = pd.get_dummies(X.embarked)['C']
 #remember to scale our features, as with linear regression
 from sklearn.cross_validation import train_test_split
@@ -106,3 +115,10 @@ plt.show()
 
 
 # In[ ]:
+
+
+# In[ ]:
+
+
+
+
