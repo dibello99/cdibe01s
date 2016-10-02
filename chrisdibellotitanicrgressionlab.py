@@ -86,9 +86,9 @@ print classification_report(y_test,base_rate_model(X_test) )
 #print "\n\n---Logistic Model---"
 #logistic AUC
 logit_roc_auc = roc_auc_score(y_test, model.predict(X_test))
-#print "Logistic AUC = %2.2f" % logit_roc_auc
-#print classification_report(y_test, model.predict(X_test) )
-#from sklearn.metrics import roc_curve
+print "Logistic AUC = %2.2f" % logit_roc_auc
+print classification_report(y_test, model.predict(X_test) )
+from sklearn.metrics import roc_curve
 fpr, tpr, thresholds = roc_curve(y_test, model.predict_proba(X_test)[:,1])
 # Plot of a ROC curve for a specific class
 get_ipython().magic(u'pylab inline')
@@ -106,6 +106,3 @@ plt.show()
 
 
 # In[ ]:
-
-
-
