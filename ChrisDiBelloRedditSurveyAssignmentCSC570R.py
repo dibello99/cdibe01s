@@ -24,7 +24,17 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from string import letters
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import roc_auc_score
+from sklearn.multiclass import OneVsRestClassifier
+from sklearn.svm import LinearSVC
+from sklearn.preprocessing import label_binarize
+#rom sklearn.model_selection import GridSearchCV
+from sklearn import cross_validation
+from sklearn import metrics
+from sklearn.grid_search import GridSearchCV
+from sklearn.svm import LinearSVC
+from sklearn.datasets import load_iris
 
 
 get_ipython().magic(u'pylab inline')
@@ -42,7 +52,7 @@ df2 = pd.read_csv("Countries-Continents-csv.csv") #
 #df.describe()
 
 
-a = pd.read_csv("RedditShortDemoSurvey-1-Cleaned.csv")
+a = pd.read_csv("test.csv")
 b = pd.read_csv("Countries-Continents-csv.csv")
 b = b.dropna(axis=1)
 merged = a.merge(b, on='Country')
@@ -173,9 +183,9 @@ f, ax = plt.subplots(figsize=(7, 3))
 sns.countplot(y="typeofCheese", data=X, color="c");
 print '           '
 print '           '
-print 'Graph Results of Pearsons Correlation Coefficient'
-sns.set(style="white")
 
+sns.set(style="white")
+print 'Graph Results of Pearsons Correlation Coefficient'
 # Generate a large random dataset
 #rs = np.random.RandomState(33)
 #d = pd.DataFrame(data=rs.normal(size=(100, 26)),
@@ -227,7 +237,7 @@ from sklearn.preprocessing import LabelEncoder
 
 
 
-
+X.fillna("Missing", inplace=True)
 enc = LabelEncoder()
 
 enc.fit(X['continent'])
@@ -259,24 +269,70 @@ enc.fit(X['militaryservice'])
 X['militaryservice']  = enc.transform(X['militaryservice'])
 print(X)
 y = X.pop("employmentstatus")
-model = RandomForestRegressor(n_estimators=100, oob_score=True, random_state=42)
+
+rf_model = RandomForestClassifier(n_estimators=1000, # Number of trees
+                                  max_features=7,    # Num features considered
+                                  oob_score=True)    # Use OOB scoring*
+
+#features = ['income','subredditdata','subredditdata','dogorcat','typeofCheese','militaryservice','employmentstatus']
+
+# Train the model
+rf_model.fit(X,y)
+X.head(26)
+print("OOB accuracy: ")
+print(rf_model.oob_score_)
+plt.figure()
+plt.plot(rf_model.oob_score_, label='Prediction Score')
+plt.plot(y, label='Prediction')
+plt.plot(X.head(26), '--', label='Test Data Set')
+plt.legend(loc='best')
+plt.title("Random Forest Prediction ")
+plt.show()
+ 
+
+ 
+
+get_ipython().magic(u'pylab inline')
+get_ipython().magic(u'matplotlib inline')
+
+
+show()
+y = label_binarize(y, classes=[0, 1, 2, 3])
+clf_SVM = OneVsRestClassifier(LinearSVC())
+params = {
+      'estimator__C': [0.5, 1.0, 1.5],
+      'estimator__tol': [1e-3, 1e-4, 1e-5],
+      }
+gs = GridSearchCV(clf_SVM, params, cv=5, scoring='roc_auc')
+gs.fit(X, y)
+
+
+X.describe()
+# Impute Age with mean
+#["Age"].fillna(X.Age.mean(), inplace=True)
+
+# Confirm the code is correct
+X.describe()
 numeric_variables = list(X.dtypes[X.dtypes != "object"].index)
-X[numeric_variables].head()
+model = RandomForestRegressor(n_estimators=100, oob_score=True, random_state=42)
+
 # I only use numeric_variables because I have yet to dummy out the categorical variables
+
 model.fit(X[numeric_variables], y)
+
 model.oob_score_
 y_oob = model.oob_prediction_
-#print "c-stat: ", roc_auc_score(y, y_oob)
+
+print "c-stat: ", roc_auc_score(y, y_oob)
 # Here is a simple function to show descriptive stats on the categorical variables
-#def describe_categorical(X):
-    
-#    from IPython.display import display, HTML
-#    display(HTML(X[X.columns[X.dtypes == "object"]].describe().to_html()))
-#print 'yyyyyyyyyyyyyyyyyyyyyyyyy'
-#describe_categorical(X)
-
-#X.drop(["Name", "Ticket", "PassengerId"], axis=1, inplace=True)
-
+def describe_categorical(X):
+    """
+    Just like .describe(), but returns the results for
+    categorical variables only.
+    """
+    from IPython.display import display, HTML
+    display(HTML(X[X.columns[X.dtypes == "object"]].describe().to_html()))
+#.drop(["Name", "Ticket", "PassengerId"], axis=1, inplace=True)
 # Change the Cabin variable to be only the first letter or None
 def clean_cabin(x):
     try:
@@ -284,41 +340,36 @@ def clean_cabin(x):
     except TypeError:
         return "None"
 
-#X["Cabin"] = X.Cabin.apply(clean_cabin)
-
-#ategorical_variables = ['not']
+#["Cabin"] = X.Cabin.apply(clean_cabin)
+#ategorical_variables = ['Sex', 'Cabin', 'Embarked']
 
 #for variable in categorical_variables:
     # Fill missing data with the word "Missing"
-#   X[variable].fillna("Missing", inplace=True)
+    #[variable].fillna("Missing", inplace=True)
     # Create array of dummies
-#   dummies = pd.get_dummies(X[variable], prefix=variable)
+#    dummies = pd.get_dummies(X[variable], prefix=variable)
     # Update X to include dummies and drop the main variable
-#   X = pd.concat([X, dummies], axis=1)
- #  X.drop([variable], axis=1, inplace=True)
-#X=X.head(26)
+#    X = pd.concat([X, dummies], axis=1)
+#    X.drop([variable], axis=1, inplace=True)
+# Look at all the columns in the dataset
+def printall(X, max_rows=10):
+    from IPython.display import display, HTML
+    display(HTML(X.to_html(max_rows=max_rows)))
+    
+printall(X)
 model = RandomForestRegressor(100, oob_score=True, n_jobs=-1, random_state=42)
 model.fit(X, y)
-#print "C-stat: ", roc_auc_score(y, model.oob_prediction_)
-model.feature_importances_    
 
+print "C-stat: ", roc_auc_score(y, model.oob_prediction_)
+model.feature_importances_
+get_ipython().magic(u'pylab inline')
+get_ipython().magic(u'matplotlib inline')
 # Simple version that shows all of the variables
-try:
-    feature_importances = pd.Series(model.feature_importances_, index=X)
-    feature_importances.sort()
-    feature_importances.plot(kind="barh", figsize=(7,6));
-    show()
-except:
-    X = X.head(26)
-    X.sort()
-    X.plot(kind="barh", figsize=(7,6));
-    show()
-    
-  
-
-
-
-# In[ ]:
-
-
-
+print 'model'
+print model.feature_importances_
+print 'index'
+print X.columns
+printall(X)
+feature_importances = pd.Series(model.feature_importances_, index=X.columns)
+feature_importances.sort_values(inplace=True)
+feature_importances.plot(kind="barh", figsize=(7,6));
