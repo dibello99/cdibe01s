@@ -1,6 +1,11 @@
 
 # coding: utf-8
 
+# In[2]:
+
+
+
+
 # In[ ]:
 
 #Chris DiBello CSC570R-Network Analysis Homework.
@@ -36,7 +41,7 @@ from networkx.generators.classic import grid_graph
 import networkx.generators.random_graphs
 M=nx.read_gml("polblogs.gml",relabel=True)
 
-print ' I was able to decipher the text from my graph and found the following results:  Please see below for more accurate count.
+print ' I was able to decipher the text from my graph and found the following results:  Please see below for more accurate count.'
 print ' top 10 most popular political blogs: '
 print ' 1. freerepublican.com  '
 print ' 2. georgewebusch.com'
@@ -287,6 +292,12 @@ plt.show()
 
 
 # In[ ]:
+
+
+
+
+# In[ ]:
+
 
 
 
